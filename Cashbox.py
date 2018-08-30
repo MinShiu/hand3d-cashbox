@@ -20,7 +20,7 @@ def cashbox():
     boxOpen = False
     handUp = False
     threshold = 70000
-    thresholdHand = 1200
+    thresholdHand = 1500
     startCount = False
     start = time.time()
     

@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.pyplot import show
 from mpl_toolkits.mplot3d import Axes3D
 
 from utils.general import detect_keypoints, trafo_coords, plot_hand, plot_hand_3d
@@ -39,6 +40,8 @@ def doHandPoseEstimate(image_cv, sess, args):
 
     # visualize
     fig = plt.figure(1)
+    plt.ion()
+    plt.clf()
     ax1 = fig.add_subplot(221)
     ax2 = fig.add_subplot(222)
     ax3 = fig.add_subplot(223)
@@ -53,4 +56,6 @@ def doHandPoseEstimate(image_cv, sess, args):
     ax4.set_xlim([-3, 3])
     ax4.set_ylim([-3, 1])
     ax4.set_zlim([-3, 3])
+    plt.show()
+    plt.pause(0.0001)
     plt.show()
