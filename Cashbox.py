@@ -15,12 +15,12 @@ def cashbox():
     UPPERB = np.array([35, 35, 35])
     LOWERB_HAND = np.array([40, 60, 100])
     UPPERB_HAND = np.array([80, 100, 140])
-    cap = cv2.VideoCapture('http://192.168.1.38:56506/videostream.cgi?user=admin&pwd=A2345678901')
+    cap = cv2.VideoCapture('http://192.168.1.38:15490/videostream.cgi?user=admin&pwd=A2345678901')
     t = time.time()
     boxOpen = False
     handUp = False
-    threshold = 70000
-    thresholdHand = 1500
+    threshold = 85000
+    thresholdHand = 2000
     startCount = False
     start = time.time()
     
@@ -73,14 +73,19 @@ def cashbox():
             t = time.time()
             print('box: ', np.count_nonzero(mask)*10)
             print('hand: ', np.count_nonzero(maskHand)*10)
-            if np.count_nonzero(mask)*10 > threshold:
-                if not(startCount):
-                    start = time.time()
-                    startCount = True
+            if boxOpen & handUp & (np.count_nonzero(mask)*10 < threshold):
+                start = time.time()
                 timenow = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                print(timenow, 'CASH BOX OPENED!' , '*ref: ', np.count_nonzero(mask)*10)
-                arr[1] = True
-                boxOpen = True
+                print(timenow, 'CASH BOX CLOSED!' , '*ref: ', np.count_nonzero(mask)*10)
+                print('-----------------------------------------')
+                print('-----------------------------------------')
+                print('----------TRANSACTION ENDED--------------')
+                print('-----------------------------------------')
+                print('-----------------------------------------')
+                arr[3] = True
+                startCount = False
+            else:
+                arr[3] = False
             if boxOpen & (np.count_nonzero(maskHand)*10 > thresholdHand):
                 timenow = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 print(timenow, 'HAND DETECTED.', '*ref: ', np.count_nonzero(maskHand))
@@ -89,16 +94,19 @@ def cashbox():
                 handUp = True
                 startCount = False
             else:
-                arr[3] = False
+                arr[2] = False
                 handUp = False
-            if boxOpen & handUp & (np.count_nonzero(mask)*10 < threshold):
-                start = time.time()
+            if np.count_nonzero(mask)*10 > threshold:
+                if not(startCount):
+                    start = time.time()
+                    startCount = True
                 timenow = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                print(timenow, 'CASH BOX CLOSED!' , '*ref: ', np.count_nonzero(mask)*10)
-                arr[3] = True
-                startCount = False
+                print(timenow, 'CASH BOX OPENED!' , '*ref: ', np.count_nonzero(mask)*10)
+                arr[1] = True
+                boxOpen = True
             else:
-                arr[3] = False
+                arr[1] = False
+                boxOpen = False
             print(time.time() - start, startCount)
             if (time.time() - start > 10) and startCount:
                 print('Warning : Cash Box opened for more than 10 secs!')
